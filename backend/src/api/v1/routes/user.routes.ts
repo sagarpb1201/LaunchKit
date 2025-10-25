@@ -1,14 +1,16 @@
 import { Router } from 'express';
-import { getAllUsers, loginUser, signupUser } from '../controllers/user.controller';
+import { getAllUsers, loginUser, signupUser } from '../controllers/user.controller.ts';
+import { protect } from '../middleware/auth.middleware.ts';
 
 const router = Router();
 
 // GET /api/v1/users
-router.get('/', getAllUsers);
+router.get('/', protect, getAllUsers);
 
 // POST /api/v1/users/signup
 router.post('/signup', signupUser);
 
-router.post('/login',loginUser)
+// POST /api/v1/users/login
+router.post('/login', loginUser);
 
 export default router;
