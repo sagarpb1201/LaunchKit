@@ -64,18 +64,18 @@ if (!process.env.REFRESH_TOKEN_SECRET) {
 
   const accessToken = jwt.sign(
     { id: user.id, email: user.email, role: user.role },
-    process.env.ACCESS_TOKEN_SECRET,
+    process.env.ACCESS_TOKEN_SECRET as jwt.Secret,
     {
-      expiresIn: Number(process.env.ACCESS_TOKEN_EXPIRES_IN),
+      expiresIn: parseInt(process.env.ACCESS_TOKEN_EXPIRES_IN!, 10),
     }
   );
 
   const refreshTokenId = uuidv4();
   const refreshToken = jwt.sign(
     { id: refreshTokenId, userId: user.id },
-    process.env.REFRESH_TOKEN_SECRET,
+    process.env.REFRESH_TOKEN_SECRET as jwt.Secret,
     {
-      expiresIn: Number(process.env.REFRESH_TOKEN_EXPIRES_IN),
+      expiresIn: parseInt(process.env.REFRESH_TOKEN_EXPIRES_IN!, 10),
     }
   );
 
