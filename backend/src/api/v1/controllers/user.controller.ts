@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import * as userService from '../services/user.service';
 import { ZodError } from 'zod';
 import { createUserSchema } from '../validators/user.validator';
-import z from 'zod';
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -25,13 +24,20 @@ export const signupUser = async (req: Request, res: Response) => {
     res.status(201).json({ success: true, data: userWithoutPassword });
   } catch (error: any) {
     if (error instanceof ZodError) {
-        const formattedErrors=z.treeifyError(error)
-      return res.status(400).json({ success: false, errors:formattedErrors});
+      const formattedErrors = error.issues.reduce(
+        (acc, issue) => {
+          const fieldName = issue.path[issue.path.length - 1] as string;
+          acc[fieldName] = acc[fieldName] ? [...acc[fieldName], issue.message] : [issue.message];
+          return acc;
+        },
+        {} as Record<string, string[]>,
+      );
+      return res.status(400).json({ success: false, errors: formattedErrors });
     }
     if (error.message.includes('already exists')) {
       return res.status(409).json({ success: false, error: error.message });
     }
-    console.error("Error during signup:", error);
-    res.status(500).json({ success: false, error: 'An unexpected error occurred during signup.' });
+    console.error('Error during signup:', error);
+    res.status(500).json({ success: false, error: 'An unexpected error occurred.' });
   }
 };
