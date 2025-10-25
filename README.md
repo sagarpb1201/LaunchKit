@@ -10,14 +10,14 @@ Building a SaaS from scratch takes weeks. LaunchKit gives you the foundation in 
 - Backend: Node.js, Express, PostgreSQL, Prisma
 - Deployment: Vercel + Railway
 
-## Features(Planned)
-- [ ] User authentication (signup/login)
-- [ ] JWT-based auth with refresh tokens
+## Features
+- [x] User authentication (signup/login)
+- [x] JWT-based auth with refresh tokens
 - [ ] User dashboard
 - [ ] Password reset
 - [ ] Payment integration (Razorpay)
 - [ ] Admin panel
-- [ ] Role-based access control
+- [x] Role-based access control
 - [ ] Responsive UI
 
 ## Why I'm building this
