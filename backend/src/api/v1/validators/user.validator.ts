@@ -10,4 +10,12 @@ export const createUserSchema = z.object({
   }),
 });
 
+export const loginUserSchema = z.object({
+  body: z.object({
+    email: z.email({ message: 'A valid email is required' }),
+    password: z.string().min(1, { message: 'Password is required' }),
+  }),
+});
+
 export type CreateUserInput = z.infer<typeof createUserSchema>['body'];
+export type LoginUserInput = z.infer<typeof loginUserSchema>['body'];

@@ -2,7 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import userRoutes from './api/v1/routes/user.routes';
 require('dotenv').config();
-import { errorHandler } from './api/v1/middlwares/error.middlware';
+import { errorHandler } from './api/v1/middleware/error.middleware';
 
 const app: Express = express();
 const PORT: number = parseInt(process.env.PORT || '3001', 10);
@@ -24,7 +24,6 @@ app.use((req: Request, res: Response) => {
   res.status(404).json({ message: 'Not Found' });
 });
 
-// Global Error Handler
 app.use(errorHandler);
 
 app.listen(PORT, () => {
