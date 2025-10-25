@@ -1,6 +1,7 @@
 import prisma from '../../../config';
 import bcrypt from 'bcryptjs';
 import { CreateUserInput } from '../validators/user.validator';
+import { ApiError } from '../../../utils/ApiError';
 
 export const findAllUsers = () => {
   return prisma.user.findMany({
@@ -22,7 +23,7 @@ export const createUser = async (input: CreateUserInput) => {
   });
 
   if (existingUser) {
-    throw new Error('A user with this email already exists.');
+    throw new ApiError(409, 'A user with this email already exists.');
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
