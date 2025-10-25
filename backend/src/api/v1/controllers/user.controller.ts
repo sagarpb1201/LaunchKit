@@ -45,6 +45,10 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json({ success: true, data: userWithoutPassword, message: 'Logged in successfully' });
 });
 
+export const getMe = asyncHandler(async (req: Request, res: Response) => {
+  res.status(200).json({ success: true, data: req.user });
+});
+
 export const refreshToken = asyncHandler(async (req: Request, res: Response) => {
   const incomingRefreshToken = req.cookies.refreshToken;
 
