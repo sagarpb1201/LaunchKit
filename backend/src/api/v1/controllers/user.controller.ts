@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import * as userService from '../services/user.service';
 import { createUserSchema, loginUserSchema } from '../validators/user.validator';
 import { asyncHandler } from '../../../utils/asyncHandler';
+import { ApiError } from '../../../utils/ApiError';
 
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
   const users = await userService.findAllUsers();
@@ -42,4 +43,30 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   const { password: _, ...userWithoutPassword } = user;
 
   res.status(200).json({ success: true, data: userWithoutPassword, message: 'Logged in successfully' });
+});
+
+export const refreshToken = asyncHandler(async (req: Request, res: Response) => {
+  const incomingRefreshToken = req.cookies.refreshToken;
+
+  if (!incomingRefreshToken) {
+    throw new ApiError(401, 'Unauthorized: No refresh token provided');
+  }
+
+  const { accessToken, refreshToken } = await userService.refreshAccessToken(incomingRefreshToken);
+
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: parseInt(process.env.ACCESS_TOKEN_EXPIRES_IN!, 10) * 1000,
+  });
+
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: parseInt(process.env.REFRESH_TOKEN_EXPIRES_IN!, 10) * 1000,
+  });
+
+  res.status(200).json({ success: true, message: 'Token refreshed successfully' });
 });

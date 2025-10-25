@@ -91,3 +91,53 @@ if (!process.env.REFRESH_TOKEN_SECRET) {
 
   return { user, accessToken, refreshToken };
 };
+
+export const refreshAccessToken = async (token: string) => {
+  // 1. Verify the refresh token and extract payload
+  const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET!) as {
+    id: string;
+    userId: string;
+  };
+
+  // 2. Find the stored token in the database
+  const storedToken = await prisma.refreshToken.findUnique({
+    where: { id: decoded.id },
+  });
+
+  // 3. Check if token exists, hasn't expired, and matches the provided token
+  if (!storedToken || new Date() > storedToken.expiresAt) {
+    throw new ApiError(403, 'Invalid or expired refresh token');
+  }
+
+  const isTokenValid = await bcrypt.compare(token, storedToken.hashedToken);
+  if (!isTokenValid) {
+    throw new ApiError(403, 'Invalid refresh token');
+  }
+
+  // 4. Find the user associated with the token
+  const user = await prisma.user.findUnique({
+    where: { id: decoded.userId },
+  });
+
+  if (!user) {
+    throw new ApiError(401, 'User not found');
+  }
+
+  // 5. Delete the old refresh token (essential for token rotation)
+  await prisma.refreshToken.delete({
+    where: { id: decoded.id },
+  });
+
+  // 6. Generate a new pair of tokens
+  const newAccessToken = jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    process.env.ACCESS_TOKEN_SECRET!,
+    { expiresIn: parseInt(process.env.ACCESS_TOKEN_EXPIRES_IN!, 10) }
+  );
+
+  const newRefreshToken = jwt.sign({ id: uuidv4(), userId: user.id }, process.env.REFRESH_TOKEN_SECRET!, {
+    expiresIn: parseInt(process.env.REFRESH_TOKEN_EXPIRES_IN!, 10),
+  });
+
+  return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+};
