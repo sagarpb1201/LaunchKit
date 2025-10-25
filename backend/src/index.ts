@@ -6,12 +6,7 @@ require('dotenv').config();
 const app: Express = express();
 const PORT: number = parseInt(process.env.PORT || '3001', 10);
 
-const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  optionsSuccessStatus: 200,
-};
-
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
 app.get('/api/v1/health', (req: Request, res: Response) => {
