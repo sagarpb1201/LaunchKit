@@ -34,7 +34,6 @@ export const createUser = async (input: CreateUserInput) => {
   const user = await prisma.user.create({
     data: { email, name, password: hashedPassword },
   });
-  console.log("user after create",user)
 
   return user;
 };
