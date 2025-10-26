@@ -191,3 +191,16 @@ export const refreshAccessToken = async (token: string) => {
 
   return { accessToken: newAccessToken, refreshToken: newRefreshToken };
 };
+
+export const logoutUser = async (token: string) => {
+  try {
+    const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET!) as { id: string };
+
+    await prisma.refreshToken.delete({
+      where: { id: decoded.id },
+    });
+  } catch (error) {
+    // If the token is invalid or expired, it's already unusable.
+    // We can safely ignore the error and proceed with logging the user out on the client.
+  }
+};

@@ -91,3 +91,16 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response) =
 
   res.status(200).json({ success: true, message: 'Token sent to email!' });
 });
+
+export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
+  const incomingRefreshToken = req.cookies.refreshToken;
+
+  if (incomingRefreshToken) {
+    await userService.logoutUser(incomingRefreshToken);
+  }
+
+  res.clearCookie('accessToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+  res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+
+  res.status(200).json({ success: true, message: 'Logged out successfully' });
+});
