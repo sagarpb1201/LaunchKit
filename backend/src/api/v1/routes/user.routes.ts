@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAllUsers, getMe, loginUser, refreshToken, signupUser } from '../controllers/user.controller';
+import { forgotPassword, getAllUsers, getMe, loginUser, refreshToken, resetPassword, signupUser } from '../controllers/user.controller';
 import { protect } from '../middleware/auth.middleware';
 import { Role } from '../../../generated/prisma';
 
@@ -16,6 +16,12 @@ router.post('/signup', signupUser);
 
 // POST /api/v1/users/login
 router.post('/login', loginUser);
+
+// POST /api/v1/users/forgot-password
+router.post('/forgot-password', forgotPassword);
+
+// PATCH /api/v1/users/reset-password/:token
+router.patch('/reset-password/:token', resetPassword);
 
 // GET /api/v1/users/me - Any logged in user
 router.get('/me', protect(), getMe);

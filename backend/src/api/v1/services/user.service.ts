@@ -1,10 +1,12 @@
 import prisma from '../../../config';
 import bcrypt from 'bcryptjs';
-import { CreateUserInput } from '../validators/user.validator';
+import { CreateUserInput, ForgotPasswordInput } from '../validators/user.validator';
 import { ApiError } from '../../../utils/ApiError';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import { LoginUserInput } from '../validators/user.validator';
+import crypto from 'crypto';
+import { sendEmail } from '../../../utils/email';
 
 export const findAllUsers = () => {
   return prisma.user.findMany({
@@ -91,19 +93,46 @@ if (!process.env.REFRESH_TOKEN_SECRET) {
   return { user, accessToken, refreshToken };
 };
 
+export const forgotPassword = async (input: ForgotPasswordInput) => {
+  const { email } = input;
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  if (!user) {
+    return;
+  }
+
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  const passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+  const passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { passwordResetToken, passwordResetExpires },
+  });
+
+  const resetURL = `http://localhost:3000/reset-password?token=${resetToken}`;
+
+  const message = `Forgot your password? Submit a PATCH request with your new password to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
+
+  await sendEmail({
+    to: user.email,
+    subject: 'Your password reset token (valid for 10 min)',
+    html: message,
+  });
+};
+
 export const refreshAccessToken = async (token: string) => {
-  // 1. Verify the refresh token and extract payload
   const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET!) as {
     id: string;
     userId: string;
   };
 
-  // 2. Find the stored token in the database
   const storedToken = await prisma.refreshToken.findUnique({
     where: { id: decoded.id },
   });
 
-  // 3. Check if token exists, hasn't expired, and matches the provided token
   if (!storedToken || new Date() > storedToken.expiresAt) {
     throw new ApiError(403, 'Invalid or expired refresh token');
   }
@@ -113,7 +142,6 @@ export const refreshAccessToken = async (token: string) => {
     throw new ApiError(403, 'Invalid refresh token');
   }
 
-  // 4. Find the user associated with the token
   const user = await prisma.user.findUnique({
     where: { id: decoded.userId },
   });
@@ -122,12 +150,10 @@ export const refreshAccessToken = async (token: string) => {
     throw new ApiError(401, 'User not found');
   }
 
-  // 5. Delete the old refresh token (essential for token rotation)
   await prisma.refreshToken.delete({
     where: { id: decoded.id },
   });
 
-  // 6. Generate a new pair of tokens
   const newAccessToken = jwt.sign(
     { id: user.id, email: user.email, role: user.role },
     process.env.ACCESS_TOKEN_SECRET!,
