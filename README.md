@@ -14,11 +14,12 @@ Building a SaaS from scratch takes weeks. LaunchKit gives you the foundation in 
 - [x] User authentication (signup/login)
 - [x] JWT-based auth with refresh tokens
 - [ ] User dashboard
-- [ ] Password reset
+- [x] Password reset
 - [ ] Payment integration (Razorpay)
 - [ ] Admin panel
 - [x] Role-based access control
 - [ ] Responsive UI
+- [ ] Email notifications
 
 ## Why I'm building this
 To help founders launch faster and focus on their unique value, not rebuilding auth for the 100th time.
