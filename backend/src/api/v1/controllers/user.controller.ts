@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import * as userService from '../services/user.service';
-import { createUserSchema, forgotPasswordSchema, loginUserSchema } from '../validators/user.validator';
+import { createUserSchema, forgotPasswordSchema, loginUserSchema, resetPasswordSchema } from '../validators/user.validator';
 import { asyncHandler } from '../../../utils/asyncHandler';
 import { ApiError } from '../../../utils/ApiError';
 
@@ -45,14 +45,6 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json({ success: true, data: userWithoutPassword, message: 'Logged in successfully' });
 });
 
-export const forgotPassword = asyncHandler(async (req: Request, res: Response) => {
-  const { email } = forgotPasswordSchema.parse(req).body;
-
-  await userService.forgotPassword({ email });
-
-  res.status(200).json({ success: true, message: 'Token sent to email!' });
-});
-
 export const getMe = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json({ success: true, data: req.user });
 });
@@ -81,4 +73,21 @@ export const refreshToken = asyncHandler(async (req: Request, res: Response) => 
   });
 
   res.status(200).json({ success: true, message: 'Token refreshed successfully' });
+});
+
+export const resetPassword = asyncHandler(async (req: Request, res: Response) => {
+  const { password } = resetPasswordSchema.parse(req).body;
+  const { token } = req.params;
+
+  await userService.resetPassword(token, { password });
+
+  res.status(200).json({ success: true, message: 'Password reset successfully' });
+});
+
+export const forgotPassword = asyncHandler(async (req: Request, res: Response) => {
+  const { email } = forgotPasswordSchema.parse(req).body;
+
+  await userService.forgotPassword({ email });
+
+  res.status(200).json({ success: true, message: 'Token sent to email!' });
 });

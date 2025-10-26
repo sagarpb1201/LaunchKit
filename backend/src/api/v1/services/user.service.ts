@@ -1,6 +1,6 @@
 import prisma from '../../../config';
 import bcrypt from 'bcryptjs';
-import { CreateUserInput, ForgotPasswordInput } from '../validators/user.validator';
+import { CreateUserInput, ForgotPasswordInput, ResetPasswordInput } from '../validators/user.validator';
 import { ApiError } from '../../../utils/ApiError';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
@@ -121,6 +121,31 @@ export const forgotPassword = async (input: ForgotPasswordInput) => {
     subject: 'Your password reset token (valid for 10 min)',
     html: message,
   });
+};
+
+export const resetPassword = async (token: string, input: ResetPasswordInput) => {
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  const user = await prisma.user.findFirst({
+    where: {
+      passwordResetToken: hashedToken,
+      passwordResetExpires: {
+        gt: new Date(),
+      },
+    },
+  });
+
+  if (!user) {
+    throw new ApiError(400, 'Token is invalid or has expired');
+  }
+
+  const hashedPassword = await bcrypt.hash(input.password, 10);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { password: hashedPassword, passwordResetToken: null, passwordResetExpires: null },
+  });
+
 };
 
 export const refreshAccessToken = async (token: string) => {
