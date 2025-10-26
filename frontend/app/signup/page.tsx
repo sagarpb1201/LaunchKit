@@ -1,7 +1,9 @@
-export default function SignupPage(){
-    return(
-        <div className="flex min-h-screen justify-center items-center">
-            <h1 className="text-4xl font-bold">Signup Page</h1>
-        </div>
-    )
+import SignupForm from '@/components/auth/signup-form';
+
+export default function SignupPage() {
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-center p-24">
+      <SignupForm />
+    </main>
+  );
 }

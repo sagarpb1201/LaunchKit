@@ -2,7 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import userRoutes from './api/v1/routes/user.routes';
 require('dotenv').config();
-import { errorHandler } from './api/v1/middleware/error.middleware';
+import { errorHandler } from './api/v1/middleware/error.middleware.ts';
 import cookieParser from 'cookie-parser';
 
 const app: Express = express();
@@ -10,10 +10,11 @@ const PORT: number = parseInt(process.env.PORT || '3001', 10);
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
     credentials: true,
   })
-);app.use(cookieParser());
+);
+app.use(cookieParser());
 app.use(express.json());
 
 app.get('/api/v1/health', (req: Request, res: Response) => {

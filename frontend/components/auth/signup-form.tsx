@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { TLoginSchema, loginSchema } from '@/lib/validators/auth';
+import { TSignupSchema, signupSchema } from '@/lib/validators/auth';
 import {
   Card,
   CardContent,
@@ -24,45 +24,56 @@ import { Button } from '@/components/ui/button';
 import api from '@/lib/axios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import Link from 'next/link';
 
-export default function LoginForm() {
+export default function SignupForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
-  const form = useForm<TLoginSchema>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<TSignupSchema>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
+      name: '',
       email: '',
       password: '',
     },
   });
 
-  const onSubmit = async (data: TLoginSchema) => {
+  const onSubmit = async (data: TSignupSchema) => {
     setError(null);
     try {
-      const response = await api.post('/users/login', data);
+      const response = await api.post('/users/signup', data);
       if (response.data.success) {
-        // On successful login, redirect to the dashboard
-        router.push('/dashboard');
+        router.push('/login');
       }
     } catch (err: any) {
-      // Handle login errors (e.g., invalid credentials)
       const errorMessage = err.response?.data?.message || 'An unexpected error occurred.';
       setError(errorMessage);
-      console.error('Login failed:', errorMessage);
+      console.error('Signup failed:', errorMessage);
     }
   };
 
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle>Login</CardTitle>
-        <CardDescription>Enter your credentials to access your account.</CardDescription>
+        <CardTitle>Sign Up</CardTitle>
+        <CardDescription>Create your LaunchKit account.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Sagar Biradar" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="email"
@@ -91,17 +102,17 @@ export default function LoginForm() {
             />
             {error && <p className="text-sm font-medium text-destructive">{error}</p>}
             <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? 'Logging in...' : 'Login'}
+              {form.formState.isSubmitting ? 'Creating account...' : 'Sign Up'}
             </Button>
           </form>
         </Form>
       </CardContent>
       <CardFooter>
         <p className="text-sm text-center w-full">
-          Don't have an account?{' '}
-          <Link href="/signup" className="text-blue-600 hover:underline">
-            Sign up
-          </Link>
+          Already have an account?{' '}
+          <a href="/login" className="text-blue-600 hover:underline">
+            Login
+          </a>
         </p>
       </CardFooter>
     </Card>
