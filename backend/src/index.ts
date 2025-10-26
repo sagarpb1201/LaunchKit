@@ -8,8 +8,12 @@ import cookieParser from 'cookie-parser';
 const app: Express = express();
 const PORT: number = parseInt(process.env.PORT || '3001', 10);
 
-app.use(cors());
-app.use(cookieParser());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  })
+);app.use(cookieParser());
 app.use(express.json());
 
 app.get('/api/v1/health', (req: Request, res: Response) => {

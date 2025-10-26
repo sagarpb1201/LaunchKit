@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -17,7 +18,7 @@ export default function Home() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">Are you ready?</p>
-          <button className="w-full">Get Started</button>
+          <button className="w-full"><Link href="/login">Get Started</Link></button>
         </CardContent>
       </Card>
     </main>
