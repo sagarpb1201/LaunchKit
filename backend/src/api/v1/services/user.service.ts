@@ -80,11 +80,10 @@ if (!process.env.REFRESH_TOKEN_SECRET) {
     }
   );
 
-  const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
   await prisma.refreshToken.create({
     data: {
       id: refreshTokenId,
-      hashedToken: hashedRefreshToken,
+      hashedToken: refreshToken,
       userId: user.id,
       expiresAt: new Date(Date.now() + parseInt(process.env.REFRESH_TOKEN_EXPIRES_IN!) * 1000),
     },
@@ -162,8 +161,7 @@ export const refreshAccessToken = async (token: string) => {
     throw new ApiError(403, 'Invalid or expired refresh token');
   }
 
-  const isTokenValid = await bcrypt.compare(token, storedToken.hashedToken);
-  if (!isTokenValid) {
+  if (token !== storedToken.hashedToken) {
     throw new ApiError(403, 'Invalid refresh token');
   }
 
