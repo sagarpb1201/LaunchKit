@@ -17,7 +17,7 @@ const processQueue = (error: any, token: string | null = null) => {
 
 const api = axios.create({
   baseURL: 'http://localhost:3001/api/v1',
-  withCredentials: true,
+  withCredentials: true, // This is crucial for sending cookies
 });
 
 api.interceptors.response.use(
@@ -27,6 +27,7 @@ api.interceptors.response.use(
   async error => {
     const originalRequest = error.config;
 
+    // Check if the error is a 401 and not a retry or a refresh token request
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise(function (resolve, reject) {
@@ -45,6 +46,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
+        // On refresh failure, redirect to login
         window.location.href = '/login';
         return Promise.reject(refreshError);
       } finally {
