@@ -30,8 +30,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const response = await api.get("/users/me");
       setUser(response.data.data);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to fetch user");
+      setError(err.response?.data?.message || "Failed to fetch user"); // Add this
       setUser(null);
+      if(window.location.pathname !== '/login'){
+        window.location.href = '/login';
+      }
     } finally {
       setIsLoading(false);
     }
@@ -60,6 +63,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       await api.post("/users/logout");
       setUser(null);
+      if(window.location.pathname !== '/login'){
+        window.location.href = '/login';
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || "Logout failed");
     } finally {
