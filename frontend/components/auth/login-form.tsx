@@ -21,13 +21,14 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import api from '@/lib/axios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/context/auth-context';
 
 export default function LoginForm() {
   const router = useRouter();
+  const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<TLoginSchema>({
@@ -41,16 +42,23 @@ export default function LoginForm() {
   const onSubmit = async (data: TLoginSchema) => {
     setError(null);
     try {
-      const response = await api.post('/users/login', data);
-      if (response.data.success) {
-        // On successful login, redirect to the dashboard
-        router.push('/dashboard');
-      }
+      await login(data.email, data.password);
+      router.push('/dashboard');
     } catch (err: any) {
-      // Handle login errors (e.g., invalid credentials)
       const errorMessage = err.response?.data?.message || 'An unexpected error occurred.';
       setError(errorMessage);
       console.error('Login failed:', errorMessage);
+      // Reset form submission state without clearing fields
+      form.reset(
+        { email: data.email, password: data.password },
+        {
+          keepValues: true,
+          keepDirty: true,
+          keepIsSubmitted: false,
+          keepTouched: true,
+          keepErrors: true,
+        }
+      );
     }
   };
 

@@ -25,9 +25,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+        <body className={geistSans.className}>
       <AuthProvider>
-        <body className={geistSans.className}>{children}</body>
+          {children}
       </AuthProvider>
+          </body>
     </html>
   );
 }
