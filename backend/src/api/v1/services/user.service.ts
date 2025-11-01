@@ -102,14 +102,19 @@ export const forgotPassword = async (input: ForgotPasswordInput) => {
   const { email } = input;
   const user = await prisma.user.findUnique({ where: { email } });
 
+  // Even if the user doesn't exist, we don't want to reveal that.
+  // We'll just return without error. This is a security best practice.
   if (!user) {
     return;
   }
 
+  // 1. Generate the random reset token.
   const resetToken = crypto.randomBytes(32).toString('hex');
 
+  // 2. Hash the token and set it on the user record in the DB.
   const passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
 
+  // 3. Set an expiry for the token (e.g., 10 minutes).
   const passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
 
   await prisma.user.update({
@@ -117,15 +122,25 @@ export const forgotPassword = async (input: ForgotPasswordInput) => {
     data: { passwordResetToken, passwordResetExpires },
   });
 
+  // 4. Send the token to the user's email.
   const resetURL = `http://localhost:3000/reset-password?token=${resetToken}`;
 
   const message = `Forgot your password? Submit a PATCH request with your new password to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
 
-  await sendEmail({
-    to: user.email,
-    subject: 'Your password reset token (valid for 10 min)',
-    html: message,
-  });
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: 'Your password reset token (valid for 10 min)',
+      html: message, // In a real app, you'd use a beautiful HTML template here.
+    });
+  } catch (err) {
+    // If email fails, reset the user's token fields so they can try again.
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { passwordResetToken: null, passwordResetExpires: null },
+    });
+    throw new ApiError(500, 'There was an error sending the email. Try again later!');
+  }
 };
 
 export const resetPassword = async (token: string, input: ResetPasswordInput) => {
@@ -150,7 +165,6 @@ export const resetPassword = async (token: string, input: ResetPasswordInput) =>
     where: { id: user.id },
     data: { password: hashedPassword, passwordResetToken: null, passwordResetExpires: null },
   });
-
 };
 
 export const updateUserProfile = async (userId: string, data: UpdateProfileInput) => {

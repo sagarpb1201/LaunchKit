@@ -90,6 +90,13 @@ export default function LoginForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
+                   <Link
+                        href="/forgot-password"
+                        className="ml-auto inline-block text-sm underline"
+                        prefetch={false}
+                      >
+                        Forgot your password?
+                      </Link>
                   <FormControl>
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
