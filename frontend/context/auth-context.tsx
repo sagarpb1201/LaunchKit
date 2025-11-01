@@ -30,10 +30,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const response = await api.get("/users/me");
       setUser(response.data.data);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to fetch user"); // Add this
+      setError(err.response?.data?.message || "Failed to fetch user");
       setUser(null);
-      if(window.location.pathname !== '/login'){
-        window.location.href = '/login';
+
+      // Define public paths that do not require authentication
+      const publicPaths = ['/login', '/signup', '/forgot-password', '/reset-password'];
+      const currentPath = window.location.pathname;
+
+      // Only redirect if the user is not on a public path
+      if (!publicPaths.includes(currentPath)) {
+        // Using router.push is generally better than window.location.href for client-side navigation
+        // but since this is a hard redirect on auth failure, window.location is acceptable.
+        window.location.href = "/login";
       }
     } finally {
       setIsLoading(false);
