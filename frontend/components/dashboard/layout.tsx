@@ -1,10 +1,9 @@
 'use client';
-
 import ProtectedRoute from '@/components/auth/protected-route';
 import Header from '@/components/dashboard/header';
 import Sidebar from '@/components/dashboard/sidebar';
 import VerificationBanner from '@/components/dashboard/verification-banner';
-import { useAuth } from '@/context/auth-context';
+import { AuthProvider, useAuth } from '@/context/auth-context';
 
 export default function DashboardLayout({
   children,
@@ -12,9 +11,11 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ProtectedRoute>
-      <DashboardLayoutContent>{children}</DashboardLayoutContent>
-    </ProtectedRoute>
+    <AuthProvider>
+      <ProtectedRoute>
+        <DashboardLayoutContent>{children}</DashboardLayoutContent>
+      </ProtectedRoute>
+    </AuthProvider>
   );
 }
 
@@ -27,7 +28,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       <div className="flex flex-col">
         <Header />
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-          {!user?.isEmailVerified && <VerificationBanner />}
+          {user && !user.isEmailVerified && <VerificationBanner />}
           {children}
         </main>
       </div>

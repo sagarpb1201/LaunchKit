@@ -108,6 +108,13 @@ export const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json({ success: true, message: 'Email verified successfully.' });
 });
 
+export const resendVerificationEmail = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user!.id;
+  await userService.resendVerificationEmail(userId);
+
+  res.status(200).json({ success: true, message: 'Verification email sent.' });
+});
+
 export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
   const incomingRefreshToken = req.cookies.refreshToken;
 

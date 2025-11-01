@@ -8,7 +8,7 @@ import {
   ReactNode,
 } from "react";
 import api from "@/lib/axios";
-import { User } from "@/types/user";
+import { User } from "@/types/user"; // Corrected path
 
 interface AuthContextType {
   user: User | null;

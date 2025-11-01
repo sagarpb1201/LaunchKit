@@ -217,6 +217,39 @@ export const verifyEmail = async (token: string) => {
   });
 };
 
+export const resendVerificationEmail = async (userId: string) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) {
+    throw new ApiError(404, 'User not found.');
+  }
+  if (user.isEmailVerified) {
+    throw new ApiError(400, 'Email is already verified.');
+  }
+
+  // Generate new email verification token
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  const emailVerificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { emailVerificationToken },
+  });
+
+  // Send verification email
+  const verificationURL = `http://localhost:3000/verify-email?token=${verificationToken}`;
+  const message = `Please verify your email by clicking this link: <a href="${verificationURL}">${verificationURL}</a>`;
+
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: 'Verify Your Email Address (Resend)',
+      html: message,
+    });
+  } catch (err) {
+    throw new ApiError(500, 'There was an error sending the email. Try again later!');
+  }
+};
+
 export const updateUserProfile = async (userId: string, data: UpdateProfileInput) => {
   // Check if the new email is already taken by another user
   if (data.email) {

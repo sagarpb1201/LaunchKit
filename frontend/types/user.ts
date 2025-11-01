@@ -1,6 +1,7 @@
-export interface User{
-    id:string;
-    email:string;
-    name:string | null;
-    role:'USER' | 'ADMIN';
+export interface User {
+  id: string;
+  name: string | null;
+  email: string;
+  role: 'USER' | 'ADMIN';
+  isEmailVerified?: boolean;
 }

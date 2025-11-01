@@ -14,6 +14,6 @@
     "noEmit": true,
     "allowImportingTsExtensions": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../frontend/components/dashboard/verification-banner.tsx", "../frontend/components/dashboard/layout.tsx"],
   "exclude": ["node_modules"]
 }

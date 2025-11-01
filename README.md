@@ -11,15 +11,26 @@ Building a SaaS from scratch takes weeks. LaunchKit gives you the foundation in 
 - Deployment: Vercel + Railway
 
 ## Features
-- [x] User authentication (signup/login)
+- [x] **User Authentication**
+  - [x] User signup with email verification
+  - [x] User login
 - [x] JWT-based auth with refresh tokens
-- [ ] User dashboard
+- [x] **User Management**
+  - [x] Professional dashboard layout
+  - [x] User profile management (update name/email)
+  - [x] Change password
 - [x] Password reset
-- [ ] Payment integration (Razorpay)
-- [ ] Admin panel
-- [x] Role-based access control
-- [ ] Responsive UI
-- [ ] Email notifications
+- [ ] **Payments (Razorpay)**
+  - [ ] Subscription plans
+  - [ ] Payment checkout
+- [ ] **Admin Panel**
+  - [ ] User management dashboard
+- [x] **Security**
+  - [x] Role-based access control (user, admin)
+  - [x] Email verification protection on routes
+- [ ] **UI/UX**
+  - [ ] Responsive design
+  - [ ] Toast notifications
 
 ## Why I'm building this
 To help founders launch faster and focus on their unique value, not rebuilding auth for the 100th time.
