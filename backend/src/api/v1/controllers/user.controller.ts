@@ -98,6 +98,16 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response) =
   res.status(200).json({ success: true, message: 'Token sent to email!' });
 });
 
+export const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
+  const { token } = req.params;
+  if (!token) {
+    throw new ApiError(400, 'Verification token is required.');
+  }
+  await userService.verifyEmail(token);
+
+  res.status(200).json({ success: true, message: 'Email verified successfully.' });
+});
+
 export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
   const incomingRefreshToken = req.cookies.refreshToken;
 

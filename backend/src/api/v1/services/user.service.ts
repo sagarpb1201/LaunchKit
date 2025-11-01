@@ -1,7 +1,7 @@
 import prisma from '../../../config';
 import bcrypt from 'bcryptjs';
 import {
-  CreateUserInput,
+  SignupUserInput,
   ForgotPasswordInput,
   ResetPasswordInput,
   UpdateProfileInput,
@@ -26,7 +26,7 @@ export const findAllUsers = () => {
   });
 };
 
-export const createUser = async (input: CreateUserInput) => {
+export const createUser = async (input: SignupUserInput) => {
   const { email, name, password } = input;
 
   const existingUser = await prisma.user.findUnique({
@@ -42,6 +42,30 @@ export const createUser = async (input: CreateUserInput) => {
   const user = await prisma.user.create({
     data: { email, name, password: hashedPassword },
   });
+
+  // Generate email verification token
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  const emailVerificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { emailVerificationToken },
+  });
+
+  // Send verification email
+  const verificationURL = `http://localhost:3000/verify-email?token=${verificationToken}`;
+  const message = `Welcome to LaunchKit! Please verify your email by clicking this link: <a href="${verificationURL}">${verificationURL}</a>`;
+
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: 'Verify Your Email Address',
+      html: message,
+    });
+  } catch (err) {
+    // Even if email fails, the user is created. They can request a new verification link later.
+    console.error('Failed to send verification email:', err);
+  }
 
   return user;
 };
@@ -168,6 +192,28 @@ export const resetPassword = async (token: string, input: ResetPasswordInput) =>
   await prisma.user.update({
     where: { id: user.id },
     data: { password: hashedPassword, passwordResetToken: null, passwordResetExpires: null },
+  });
+};
+
+export const verifyEmail = async (token: string) => {
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  const user = await prisma.user.findFirst({
+    where: {
+      emailVerificationToken: hashedToken,
+    },
+  });
+
+  if (!user) {
+    throw new ApiError(400, 'Invalid verification token.');
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      isEmailVerified: true,
+      emailVerificationToken: null, // Invalidate the token
+    },
   });
 };
 

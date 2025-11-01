@@ -8,6 +8,7 @@ import {
   refreshToken,
   resetPassword,
 signupUser,
+  verifyEmail,
   updateMe,
   updateMyPassword,
 } from '../controllers/user.controller';
@@ -36,6 +37,9 @@ router.post('/forgot-password', forgotPassword);
 
 // PATCH /api/v1/users/reset-password/:token
 router.patch('/reset-password/:token', resetPassword);
+
+// GET /api/v1/users/verify-email/:token
+router.get('/verify-email/:token', verifyEmail);
 
 // GET /api/v1/users/me - Any logged in user
 router.get('/me', protect(), getMe);

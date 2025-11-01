@@ -52,7 +52,7 @@ export const changePasswordSchema = z.object({
     }),
 });
 
-export type CreateUserInput = z.infer<typeof createUserSchema>['body'];
+export type SignupUserInput = z.infer<typeof createUserSchema>['body'];
 export type LoginUserInput = z.infer<typeof loginUserSchema>['body'];
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>['body'];
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>['body'];
