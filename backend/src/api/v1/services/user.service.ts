@@ -105,8 +105,10 @@ export const forgotPassword = async (input: ForgotPasswordInput) => {
   // Even if the user doesn't exist, we don't want to reveal that.
   // We'll just return without error. This is a security best practice.
   if (!user) {
+    console.log('User not found');
     return;
   }
+  console.log('User found');
 
   // 1. Generate the random reset token.
   const resetToken = crypto.randomBytes(32).toString('hex');
@@ -126,6 +128,7 @@ export const forgotPassword = async (input: ForgotPasswordInput) => {
   const resetURL = `http://localhost:3000/reset-password?token=${resetToken}`;
 
   const message = `Forgot your password? Submit a PATCH request with your new password to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
+  console.log('Sending email to', user.email);
 
   try {
     await sendEmail({
@@ -134,6 +137,7 @@ export const forgotPassword = async (input: ForgotPasswordInput) => {
       html: message, // In a real app, you'd use a beautiful HTML template here.
     });
   } catch (err) {
+    console.log('Error sending email', err);
     // If email fails, reset the user's token fields so they can try again.
     await prisma.user.update({
       where: { id: user.id },

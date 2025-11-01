@@ -83,8 +83,7 @@ export const refreshToken = asyncHandler(async (req: Request, res: Response) => 
 });
 
 export const resetPassword = asyncHandler(async (req: Request, res: Response) => {
-  const { password } = resetPasswordSchema.parse(req).body;
-  const { token } = req.params;
+  const { body: { password }, params: { token } } = resetPasswordSchema.parse(req);
 
   await userService.resetPassword(token, { password });
 
