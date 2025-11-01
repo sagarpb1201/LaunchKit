@@ -1,6 +1,12 @@
 import prisma from '../../../config';
 import bcrypt from 'bcryptjs';
-import { CreateUserInput, ForgotPasswordInput, ResetPasswordInput } from '../validators/user.validator';
+import {
+  CreateUserInput,
+  ForgotPasswordInput,
+  ResetPasswordInput,
+  UpdateProfileInput,
+  ChangePasswordInput,
+} from '../validators/user.validator';
 import { ApiError } from '../../../utils/ApiError';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
@@ -145,6 +151,46 @@ export const resetPassword = async (token: string, input: ResetPasswordInput) =>
     data: { password: hashedPassword, passwordResetToken: null, passwordResetExpires: null },
   });
 
+};
+
+export const updateUserProfile = async (userId: string, data: UpdateProfileInput) => {
+  // Check if the new email is already taken by another user
+  if (data.email) {
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        email: data.email,
+        id: { not: userId },
+      },
+    });
+    if (existingUser) {
+      throw new ApiError(409, 'Email is already in use by another account.');
+    }
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      name: data.name,
+      email: data.email,
+    },
+  });
+
+  return updatedUser;
+};
+
+export const changeUserPassword = async (userId: string, data: ChangePasswordInput) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  const isPasswordValid = await bcrypt.compare(data.currentPassword, user.password);
+  if (!isPasswordValid) {
+    throw new ApiError(401, 'Incorrect current password.');
+  }
+
+  const hashedNewPassword = await bcrypt.hash(data.newPassword, 10);
+  await prisma.user.update({ where: { id: userId }, data: { password: hashedNewPassword } });
 };
 
 export const refreshAccessToken = async (token: string) => {

@@ -1,6 +1,13 @@
 import { Request, Response } from 'express';
 import * as userService from '../services/user.service';
-import { createUserSchema, forgotPasswordSchema, loginUserSchema, resetPasswordSchema } from '../validators/user.validator';
+import {
+  createUserSchema,
+  forgotPasswordSchema,
+  loginUserSchema,
+  resetPasswordSchema,
+  updateProfileSchema,
+  changePasswordSchema,
+} from '../validators/user.validator';
 import { asyncHandler } from '../../../utils/asyncHandler';
 import { ApiError } from '../../../utils/ApiError';
 
@@ -103,4 +110,25 @@ export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
   res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
 
   res.status(200).json({ success: true, message: 'Logged out successfully' });
+});
+
+export const updateMe = asyncHandler(async (req: Request, res: Response) => {
+  const { name, email } = updateProfileSchema.parse(req).body;
+  const userId = req.user!.id;
+
+  const updatedUser = await userService.updateUserProfile(userId, { name, email });
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { password: _, ...userWithoutPassword } = updatedUser;
+
+  res.status(200).json({ success: true, data: userWithoutPassword, message: 'Profile updated successfully' });
+});
+
+export const updateMyPassword = asyncHandler(async (req: Request, res: Response) => {
+  const { currentPassword, newPassword } = changePasswordSchema.parse(req).body;
+  const userId = req.user!.id;
+
+  await userService.changeUserPassword(userId, { currentPassword, newPassword, confirmNewPassword: newPassword });
+
+  res.status(200).json({ success: true, message: 'Password changed successfully' });
 });

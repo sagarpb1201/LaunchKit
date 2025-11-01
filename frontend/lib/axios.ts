@@ -39,6 +39,7 @@ api.interceptors.response.use(
     // Skip refresh logic for these endpoints to prevent loops
     const skipRefreshFor = [
       '/auth/refresh',
+      '/users/update-my-password',
       '/users/login',
       '/users/me'  // Add this to prevent the loop
     ];
