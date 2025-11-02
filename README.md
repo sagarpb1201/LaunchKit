@@ -31,6 +31,8 @@ Building a SaaS from scratch takes weeks. LaunchKit gives you the foundation in 
 - [ ] **UI/UX**
   - [ ] Responsive design
   - [ ] Toast notifications
+- [ ] **API**
+  - [ ] Rate limiting
 
 ## Why I'm building this
 To help founders launch faster and focus on their unique value, not rebuilding auth for the 100th time.
