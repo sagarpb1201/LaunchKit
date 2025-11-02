@@ -1,16 +1,22 @@
 # LaunchKit
 
-A production-ready SaaS starter kit for indie founders and startups.
+A production-ready, open-source SaaS starter kit.
+
+**Note for Founders & Freelancers:** LaunchKit is more than just code; it's a strategic asset.
+- **For Founders:** Use this to see the quality of work I deliver. Want to launch your SaaS in a week, not three months? [Hire me](https://twitter.com/your_handle_here) to implement and customize this for your specific business.
+- **For Freelancers:** Fork this repository. Use it to build projects for your own clients and accelerate your workflow.
 
 ## What it solves
-Building a SaaS from scratch takes weeks. LaunchKit gives you the foundation in minutes - auth, payments, admin panel, and a clean UI ready to customize.
+Building a SaaS from scratch is a repetitive, time-consuming process. Founders waste weeks on solved problems like authentication, payments, and user management instead of focusing on their core product.
+
+LaunchKit provides a rock-solid foundation with all the essentials, allowing you to build and launch your unique SaaS idea in a fraction of the time.
 
 ## Tech Stack
 - Frontend: Next.js 15, Tailwind CSS, shadcn/ui
 - Backend: Node.js, Express, PostgreSQL, Prisma
 - Deployment: Vercel + Railway
 
-## Features
+## Core Features
 - [x] **User Authentication**
   - [x] User signup with email verification
   - [x] User login
@@ -33,6 +39,3 @@ Building a SaaS from scratch takes weeks. LaunchKit gives you the foundation in 
   - [ ] Toast notifications
 - [ ] **API**
   - [ ] Rate limiting
-
-## Why I'm building this
-To help founders launch faster and focus on their unique value, not rebuilding auth for the 100th time.
