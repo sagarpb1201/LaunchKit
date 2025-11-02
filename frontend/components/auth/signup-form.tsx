@@ -56,7 +56,7 @@ export default function SignupForm() {
     <Card className="w-full max-w-sm">
       <CardHeader>
         <CardTitle>Sign Up</CardTitle>
-        <CardDescription>Create your LaunchKit account.</CardDescription>
+        <CardDescription>Create your LaunchinKit account.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>

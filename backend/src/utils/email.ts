@@ -98,10 +98,10 @@ class EmailService {
   // Email templates
   private readonly templates = {
     welcomeEmail: (name: string): EmailTemplate => ({
-      subject: 'Welcome to LaunchKit! 🚀',
+      subject: 'Welcome to LaunchinKit! 🚀',
       html: `
         <h1>Welcome ${name}!</h1>
-        <p>Thank you for joining LaunchKit. We're excited to have you on board!</p>
+        <p>Thank you for joining LaunchinKit. We're excited to have you on board!</p>
       `,
     }),
 

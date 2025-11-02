@@ -12,7 +12,7 @@ export default function Home() {
     <main className="flex min-h-screen items-center justify-center p-8">
       <Card className="w-[400px]">
         <CardHeader>
-          <CardTitle>LaunchKit</CardTitle>
+          <CardTitle>LaunchinKit</CardTitle>
           <CardDescription>Production-ready SaaS starter</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
