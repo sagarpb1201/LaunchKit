@@ -12,7 +12,7 @@ import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import { LoginUserInput } from '../validators/user.validator';
 import crypto from 'crypto';
-import { sendEmail } from '../../../utils/email';
+import { emailService } from '../../../utils/email';
 
 export const findAllUsers = () => {
   return prisma.user.findMany({
@@ -43,7 +43,6 @@ export const createUser = async (input: SignupUserInput) => {
     data: { email, name, password: hashedPassword },
   });
 
-  // Generate email verification token
   const verificationToken = crypto.randomBytes(32).toString('hex');
   const emailVerificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
 
@@ -52,18 +51,15 @@ export const createUser = async (input: SignupUserInput) => {
     data: { emailVerificationToken },
   });
 
-  // Send verification email
-  const verificationURL = `http://localhost:3000/verify-email?token=${verificationToken}`;
-  const message = `Welcome to LaunchKit! Please verify your email by clicking this link: <a href="${verificationURL}">${verificationURL}</a>`;
+  const verificationURL = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
 
   try {
-    await sendEmail({
-      to: user.email,
-      subject: 'Verify Your Email Address',
-      html: message,
-    });
+    if (user.email && user.name) {
+      await emailService.sendVerificationEmail(user.email, verificationURL);
+    } else {
+      console.warn('Skipping verification email: missing user email or name', { userId: user.id, email: user.email, name: user.name });
+    }
   } catch (err) {
-    // Even if email fails, the user is created. They can request a new verification link later.
     console.error('Failed to send verification email:', err);
   }
 
@@ -126,21 +122,14 @@ export const forgotPassword = async (input: ForgotPasswordInput) => {
   const { email } = input;
   const user = await prisma.user.findUnique({ where: { email } });
 
-  // Even if the user doesn't exist, we don't want to reveal that.
-  // We'll just return without error. This is a security best practice.
   if (!user) {
     console.log('User not found');
     return;
   }
-  console.log('User found');
 
-  // 1. Generate the random reset token.
+  // Generate reset token logic...
   const resetToken = crypto.randomBytes(32).toString('hex');
-
-  // 2. Hash the token and set it on the user record in the DB.
   const passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-
-  // 3. Set an expiry for the token (e.g., 10 minutes).
   const passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
 
   await prisma.user.update({
@@ -148,26 +137,17 @@ export const forgotPassword = async (input: ForgotPasswordInput) => {
     data: { passwordResetToken, passwordResetExpires },
   });
 
-  // 4. Send the token to the user's email.
-  const resetURL = `http://localhost:3000/reset-password?token=${resetToken}`;
-
-  const message = `Forgot your password? Submit a PATCH request with your new password to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
-  console.log('Sending email to', user.email);
+  const resetURL = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
   try {
-    await sendEmail({
-      to: user.email,
-      subject: 'Your password reset token (valid for 10 min)',
-      html: message, // In a real app, you'd use a beautiful HTML template here.
-    });
+    await emailService.sendPasswordResetEmail(user.email, resetURL);
   } catch (err) {
-    console.log('Error sending email', err);
-    // If email fails, reset the user's token fields so they can try again.
+    // Reset token fields if email fails
     await prisma.user.update({
       where: { id: user.id },
       data: { passwordResetToken: null, passwordResetExpires: null },
     });
-    throw new ApiError(500, 'There was an error sending the email. Try again later!');
+    throw new ApiError(500, 'Failed to send password reset email. Please try again later.');
   }
 };
 
@@ -226,7 +206,6 @@ export const resendVerificationEmail = async (userId: string) => {
     throw new ApiError(400, 'Email is already verified.');
   }
 
-  // Generate new email verification token
   const verificationToken = crypto.randomBytes(32).toString('hex');
   const emailVerificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
 
@@ -235,18 +214,12 @@ export const resendVerificationEmail = async (userId: string) => {
     data: { emailVerificationToken },
   });
 
-  // Send verification email
-  const verificationURL = `http://localhost:3000/verify-email?token=${verificationToken}`;
-  const message = `Please verify your email by clicking this link: <a href="${verificationURL}">${verificationURL}</a>`;
+  const verificationURL = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
 
   try {
-    await sendEmail({
-      to: user.email,
-      subject: 'Verify Your Email Address (Resend)',
-      html: message,
-    });
+    await emailService.sendVerificationEmail(user.email, verificationURL);
   } catch (err) {
-    throw new ApiError(500, 'There was an error sending the email. Try again later!');
+    throw new ApiError(500, 'Failed to send verification email. Please try again later.');
   }
 };
 
