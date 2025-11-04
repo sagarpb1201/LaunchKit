@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import * as userService from '../services/user.service';
+import { ApiResponse } from '../../../utils/ApiResponse';
 import {
   createUserSchema,
   forgotPasswordSchema,
@@ -13,7 +14,7 @@ import { ApiError } from '../../../utils/ApiError';
 
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
   const users = await userService.findAllUsers();
-  res.status(200).json({ success: true, data: users });
+  res.status(200).json(new ApiResponse(200, users, 'Users retrieved successfully'));
 });
 
 export const signupUser = asyncHandler(async (req: Request, res: Response) => {
@@ -24,7 +25,7 @@ export const signupUser = asyncHandler(async (req: Request, res: Response) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: _, ...userWithoutPassword } = user;
 
-  res.status(201).json({ success: true, data: userWithoutPassword });
+  res.status(201).json(new ApiResponse(201, userWithoutPassword, 'User created successfully'));
 });
 
 export const loginUser = asyncHandler(async (req: Request, res: Response) => {
@@ -49,11 +50,11 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: _, ...userWithoutPassword } = user;
 
-  res.status(200).json({ success: true, data: userWithoutPassword, message: 'Logged in successfully' });
+  res.status(200).json(new ApiResponse(200, userWithoutPassword, 'Logged in successfully'));
 });
 
 export const getMe = asyncHandler(async (req: Request, res: Response) => {
-  res.status(200).json({ success: true, data: req.user });
+  res.status(200).json(new ApiResponse(200, req.user, 'User profile retrieved successfully'));
 });
 
 export const refreshToken = asyncHandler(async (req: Request, res: Response) => {
@@ -79,7 +80,7 @@ export const refreshToken = asyncHandler(async (req: Request, res: Response) => 
     maxAge: parseInt(process.env.REFRESH_TOKEN_EXPIRES_IN!, 10) * 1000,
   });
 
-  res.status(200).json({ success: true, message: 'Token refreshed successfully' });
+  res.status(200).json(new ApiResponse(200, null, 'Token refreshed successfully'));
 });
 
 export const resetPassword = asyncHandler(async (req: Request, res: Response) => {
@@ -87,7 +88,7 @@ export const resetPassword = asyncHandler(async (req: Request, res: Response) =>
 
   await userService.resetPassword(token, { password });
 
-  res.status(200).json({ success: true, message: 'Password reset successfully' });
+  res.status(200).json(new ApiResponse(200, null, 'Password reset successfully'));
 });
 
 export const forgotPassword = asyncHandler(async (req: Request, res: Response) => {
@@ -95,7 +96,7 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response) =
 
   await userService.forgotPassword({ email });
 
-  res.status(200).json({ success: true, message: 'Token sent to email!' });
+  res.status(200).json(new ApiResponse(200, null, 'Token sent to email!'));
 });
 
 export const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
@@ -105,14 +106,14 @@ export const verifyEmail = asyncHandler(async (req: Request, res: Response) => {
   }
   await userService.verifyEmail(token);
 
-  res.status(200).json({ success: true, message: 'Email verified successfully.' });
+  res.status(200).json(new ApiResponse(200, null, 'Email verified successfully.'));
 });
 
 export const resendVerificationEmail = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!.id;
   await userService.resendVerificationEmail(userId);
 
-  res.status(200).json({ success: true, message: 'Verification email sent.' });
+  res.status(200).json(new ApiResponse(200, null, 'Verification email sent.'));
 });
 
 export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
@@ -125,7 +126,7 @@ export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
   res.clearCookie('accessToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
   res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
 
-  res.status(200).json({ success: true, message: 'Logged out successfully' });
+  res.status(200).json(new ApiResponse(200, null, 'Logged out successfully'));
 });
 
 export const updateMe = asyncHandler(async (req: Request, res: Response) => {
@@ -137,7 +138,7 @@ export const updateMe = asyncHandler(async (req: Request, res: Response) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: _, ...userWithoutPassword } = updatedUser;
 
-  res.status(200).json({ success: true, data: userWithoutPassword, message: 'Profile updated successfully' });
+  res.status(200).json(new ApiResponse(200, userWithoutPassword, 'Profile updated successfully'));
 });
 
 export const updateMyPassword = asyncHandler(async (req: Request, res: Response) => {
@@ -146,5 +147,5 @@ export const updateMyPassword = asyncHandler(async (req: Request, res: Response)
 
   await userService.changeUserPassword(userId, { currentPassword, newPassword, confirmNewPassword: newPassword });
 
-  res.status(200).json({ success: true, message: 'Password changed successfully' });
+  res.status(200).json(new ApiResponse(200, null, 'Password changed successfully'));
 });

@@ -26,6 +26,8 @@ model User {
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @updatedAt
   refreshTokens        RefreshToken[]
+  stripeCustomerId String?      @unique @map("stripe_customer_id")
+  subscription     Subscription?
 }
 
 model RefreshToken {
@@ -36,4 +38,45 @@ model RefreshToken {
   expiresAt   DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  INCOMPLETE
+  PAST_DUE
+}
+
+model Plan {
+  id            String  @id @default(cuid())
+  name          String
+  price         Float
+  // The ID of the corresponding Price object in Stripe (e.g., price_123abc).
+  stripePriceId String  @unique @map("stripe_price_id")
+  features      String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id String @id @default(cuid())
+
+  // The ID of the corresponding Subscription object in Stripe (e.g., sub_123abc).
+  stripeSubscriptionId String             @unique @map("stripe_subscription_id")
+  status               SubscriptionStatus
+  currentPeriodStart   DateTime           @map("current_period_start")
+  currentPeriodEnd     DateTime           @map("current_period_end")
+  cancelAtPeriodEnd    Boolean            @default(false) @map("cancel_at_period_end")
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  // Foreign key to the User model.
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique // A user can only have one subscription at a time.
+
+  // Foreign key to the Plan model.
+  plan   Plan   @relation(fields: [planId], references: [id])
+  planId String
 }
