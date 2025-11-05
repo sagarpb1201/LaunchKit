@@ -1,6 +1,7 @@
 import prisma from '../../../config';
 import { ApiError } from '../../../utils/ApiError';
 import Stripe from 'stripe';
+import { Plan } from '../../../generated/prisma';
 
 // Initialize Stripe with the secret key and a specific API version.
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -55,4 +56,18 @@ export const createCheckoutSession = async (
   }
 
   return session.url;
+};
+
+/**
+ * Fetches all available subscription plans from the database.
+ * The plans are ordered by price in ascending order.
+ * @returns A promise that resolves to an array of plans.
+ */
+export const getSubscriptionPlans = async (): Promise<Plan[]> => {
+  const plans = await prisma.plan.findMany({
+    orderBy: {
+      price: 'asc',
+    },
+  });
+  return plans;
 };
