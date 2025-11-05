@@ -5,6 +5,7 @@
     "moduleResolution": "NodeNext",
     "lib": ["ES2020"],
     "rootDir": "src",
+    "rootDir": ".",
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
@@ -14,6 +15,6 @@
     "noEmit": true,
     "allowImportingTsExtensions": true
   },
-  "include": ["src/**/*", "prisma/seed.ts"],
+  "include": ["src/**/*", "src/prisma/seed.ts"],
   "exclude": ["node_modules"]
 }
