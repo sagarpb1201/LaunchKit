@@ -37,10 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const publicPaths = ['/login', '/signup', '/forgot-password', '/reset-password'];
       const currentPath = window.location.pathname;
 
-      // Only redirect if the user is not on a public path
       if (!publicPaths.includes(currentPath)) {
-        // Using router.push is generally better than window.location.href for client-side navigation
-        // but since this is a hard redirect on auth failure, window.location is acceptable.
         window.location.href = "/login";
       }
     } finally {

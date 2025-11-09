@@ -15,7 +15,7 @@ signupUser,
 } from '../controllers/user.controller';
 import { protect } from '../middleware/auth.middleware';
 import { isVerified } from '../middleware/isVerified.middleware';
-import { Role } from '../../../generated/prisma';
+import { Role } from '../../../generated/client';
 
 const router = Router();
 

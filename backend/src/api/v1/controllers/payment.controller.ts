@@ -24,3 +24,40 @@ export const createCheckoutSessionController = asyncHandler(
       );
   }
 );
+
+export const createProductAndPlanController = asyncHandler(
+  async(req:Request, res:Response)=>{
+    const {productName,productDescription,currency,interval,price,features,planName}=req.body;
+    const product=await paymentService.createProductAndPlan(
+      productName,
+      productDescription,
+      currency,
+      interval,
+      price,
+      features,
+      planName
+    )
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        product,
+        "Product and plan created successfully"
+      )
+    );
+  }
+)
+
+export const getSubscriptionPlans=asyncHandler(
+  async(req:Request, res:Response)=>{
+    // const plans=await prisma.plan.findMany();
+    const plans=await paymentService.getPlans();
+    console.log("Plans",plans)
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        plans,
+        'Plans retrieved successfully'
+      )
+    )
+  }
+)

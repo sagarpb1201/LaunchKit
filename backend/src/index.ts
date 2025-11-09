@@ -1,6 +1,8 @@
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import userRoutes from './api/v1/routes/user.routes';
+import paymentRoutes from './api/v1/routes/payment.routes';
+import webhookRoutes from './api/v1/routes/webhook.routes';
 require('dotenv').config();
 import { errorHandler } from './api/v1/middleware/error.middleware.ts';
 import cookieParser from 'cookie-parser';
@@ -15,6 +17,9 @@ app.use(
   })
 );
 app.use(cookieParser());
+
+app.use('/api/v1/webhooks', webhookRoutes);
+
 app.use(express.json());
 
 app.get('/api/v1/health', (req: Request, res: Response) => {
@@ -26,6 +31,7 @@ app.get('/api/v1/health', (req: Request, res: Response) => {
 });
 
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/payment', paymentRoutes);
 
 app.use((req: Request, res: Response) => {
   res.status(404).json({ message: 'Not Found' });
