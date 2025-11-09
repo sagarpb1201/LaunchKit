@@ -14,20 +14,21 @@ enum Role {
 }
 
 model User {
-  id                   String         @id @default(uuid())
-  email                String         @unique
-  password             String
-  name                 String?
-  role                 Role           @default(USER)
-  passwordResetToken   String?
-  passwordResetExpires DateTime?
-  isEmailVerified      Boolean        @default(false)
-  emailVerificationToken String?      @unique
-  createdAt            DateTime       @default(now())
-  updatedAt            DateTime       @updatedAt
-  refreshTokens        RefreshToken[]
-  stripeCustomerId String?      @unique @map("stripe_customer_id")
-  subscription     Subscription?
+  id                     String         @id @default(uuid())
+  email                  String         @unique
+  password               String
+  name                   String?
+  role                   Role           @default(USER)
+  passwordResetToken     String?
+  passwordResetExpires   DateTime?
+  isEmailVerified        Boolean        @default(false)
+  emailVerificationToken String?        @unique
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  refreshTokens          RefreshToken[]
+  stripeCustomerId       String?        @unique @map("stripe_customer_id")
+  subscription           Subscription?
+  Payments               Payments[]
 }
 
 model RefreshToken {
@@ -40,6 +41,35 @@ model RefreshToken {
   updatedAt   DateTime @updatedAt
 }
 
+model Product {
+  id              String   @id @default(uuid())
+  name            String
+  description     String?
+  stripeProductId String   @unique @map("stripe_product_id")
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  plans           Plan[]
+}
+
+model Plan {
+  id            String         @id @default(cuid())
+  name          String
+  price         Float
+  currency      String         @default("inr")
+  interval      String         @default("month")
+  stripePriceId String         @unique @map("stripe_price_id")
+  features      String[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  active        Boolean        @default(true)
+  product       Product?       @relation(fields: [productId], references: [id])
+  productId     String?
+  subscriptions Subscription[]
+
+  @@index([productId])
+}
+
 enum SubscriptionStatus {
   ACTIVE
   CANCELED
@@ -47,23 +77,8 @@ enum SubscriptionStatus {
   PAST_DUE
 }
 
-model Plan {
-  id            String  @id @default(cuid())
-  name          String
-  price         Float
-  // The ID of the corresponding Price object in Stripe (e.g., price_123abc).
-  stripePriceId String  @unique @map("stripe_price_id")
-  features      String[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  subscriptions Subscription[]
-}
-
 model Subscription {
   id String @id @default(cuid())
-
-  // The ID of the corresponding Subscription object in Stripe (e.g., sub_123abc).
   stripeSubscriptionId String             @unique @map("stripe_subscription_id")
   status               SubscriptionStatus
   currentPeriodStart   DateTime           @map("current_period_start")
@@ -71,12 +86,31 @@ model Subscription {
   cancelAtPeriodEnd    Boolean            @default(false) @map("cancel_at_period_end")
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
+  canceledAt           DateTime?
 
-  // Foreign key to the User model.
   user   User   @relation(fields: [userId], references: [id])
-  userId String @unique // A user can only have one subscription at a time.
+  userId String @unique
 
-  // Foreign key to the Plan model.
   plan   Plan   @relation(fields: [planId], references: [id])
   planId String
+
+  @@index([userId])
+  @@index([stripeSubscriptionId])
+}
+
+model Payments {
+  id                    String   @id @default(uuid())
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripePaymentIntentId String   @unique
+  stripeInvoiceId       String?
+  amount                Int
+  currency              String   @default("inr")
+  status                String
+  description           String?
+  recipientUrl          String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([userId])
 }
