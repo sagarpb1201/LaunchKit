@@ -144,7 +144,7 @@ exports.Prisma.RefreshTokenScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.ProductScalarFieldEnum = {
+exports.Prisma.ProductsScalarFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description',
@@ -225,7 +225,7 @@ exports.SubscriptionStatus = exports.$Enums.SubscriptionStatus = {
 exports.Prisma.ModelName = {
   User: 'User',
   RefreshToken: 'RefreshToken',
-  Product: 'Product',
+  Products: 'Products',
   Plan: 'Plan',
   Subscription: 'Subscription',
   Payments: 'Payments'

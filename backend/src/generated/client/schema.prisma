@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  output   = "../src/generated/client"
 }
 
 datasource db {
@@ -41,7 +41,7 @@ model RefreshToken {
   updatedAt   DateTime @updatedAt
 }
 
-model Product {
+model Products {
   id              String   @id @default(uuid())
   name            String
   description     String?
@@ -63,7 +63,7 @@ model Plan {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   active        Boolean        @default(true)
-  product       Product?       @relation(fields: [productId], references: [id])
+  Products      Products?      @relation(fields: [productId], references: [id])
   productId     String?
   subscriptions Subscription[]
 

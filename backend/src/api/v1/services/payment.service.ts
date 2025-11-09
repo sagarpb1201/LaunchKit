@@ -1,7 +1,6 @@
 import prisma from '../../../config/prisma';
 import { ApiError } from '../../../utils/ApiError';
 import stripe from '../../../config/stripe';
-import { Plan } from '../../../generated/prisma';
 
 const getOrCreateStripeCustomer = async(userId:string)=>{
   const user=await prisma.user.findUnique({

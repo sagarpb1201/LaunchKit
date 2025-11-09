@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { protect } from "../middleware/auth.middleware";
-import { Role } from "../../../generated/prisma";
+import { Role } from "../../../generated/client";
 import { createCheckoutSessionController } from '../controllers/payment.controller'
 
 const router=Router();
