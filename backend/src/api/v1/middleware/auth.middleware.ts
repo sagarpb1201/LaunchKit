@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import { asyncHandler } from '../../../utils/asyncHandler';
 import { ApiError } from '../../../utils/ApiError';
-import prisma from '../../../config';
+import prisma from '../../../config/prisma';
 import { Role } from '../../../generated/prisma';
 
 export const protect = (roles: Role[] = []) =>

@@ -1,18 +1,10 @@
-import { Router } from 'express';
-import {
-  createCheckoutSessionController,
-  getPlansController,
-} from '../controllers/payment.controller';
-import { protect } from '../middleware/auth.middleware';
+import { Router } from "express";
+import { protect } from "../middleware/auth.middleware";
+import { Role } from "../../../generated/prisma";
+import { createCheckoutSessionController } from '../controllers/payment.controller'
 
-const router = Router();
+const router=Router();
 
-router.get('/plans', getPlansController);
-
-router.post(
-  '/create-checkout-session',
-  protect(),
-  createCheckoutSessionController
-);
+router.post('/create-checkout',protect([Role.ADMIN]), createCheckoutSessionController);
 
 export default router;

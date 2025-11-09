@@ -7,7 +7,6 @@ import { createCheckoutSessionSchema } from "../validators/payment.validator";
 export const createCheckoutSessionController = asyncHandler(
   async (req: Request, res: Response) => {
     const { priceId } = createCheckoutSessionSchema.parse(req).body;
-    // @ts-ignore - We will fix the Express Request type globally later.
     const userId = req.user!.id;
     const sessionUrl = await paymentService.createCheckoutSession(
       userId,

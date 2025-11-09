@@ -1,4 +1,4 @@
-import prisma from '../../../config';
+import prisma from '../../../config/prisma';
 import bcrypt from 'bcryptjs';
 import {
   SignupUserInput,
