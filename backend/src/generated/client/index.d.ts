@@ -7209,7 +7209,6 @@ export namespace Prisma {
   export type PaymentsMinAggregateOutputType = {
     id: string | null
     userId: string | null
-    stripePaymentIntentId: string | null
     stripeInvoiceId: string | null
     amount: number | null
     currency: string | null
@@ -7223,7 +7222,6 @@ export namespace Prisma {
   export type PaymentsMaxAggregateOutputType = {
     id: string | null
     userId: string | null
-    stripePaymentIntentId: string | null
     stripeInvoiceId: string | null
     amount: number | null
     currency: string | null
@@ -7237,7 +7235,6 @@ export namespace Prisma {
   export type PaymentsCountAggregateOutputType = {
     id: number
     userId: number
-    stripePaymentIntentId: number
     stripeInvoiceId: number
     amount: number
     currency: number
@@ -7261,7 +7258,6 @@ export namespace Prisma {
   export type PaymentsMinAggregateInputType = {
     id?: true
     userId?: true
-    stripePaymentIntentId?: true
     stripeInvoiceId?: true
     amount?: true
     currency?: true
@@ -7275,7 +7271,6 @@ export namespace Prisma {
   export type PaymentsMaxAggregateInputType = {
     id?: true
     userId?: true
-    stripePaymentIntentId?: true
     stripeInvoiceId?: true
     amount?: true
     currency?: true
@@ -7289,7 +7284,6 @@ export namespace Prisma {
   export type PaymentsCountAggregateInputType = {
     id?: true
     userId?: true
-    stripePaymentIntentId?: true
     stripeInvoiceId?: true
     amount?: true
     currency?: true
@@ -7390,7 +7384,6 @@ export namespace Prisma {
   export type PaymentsGroupByOutputType = {
     id: string
     userId: string
-    stripePaymentIntentId: string
     stripeInvoiceId: string | null
     amount: number
     currency: string
@@ -7423,7 +7416,6 @@ export namespace Prisma {
   export type PaymentsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
-    stripePaymentIntentId?: boolean
     stripeInvoiceId?: boolean
     amount?: boolean
     currency?: boolean
@@ -7438,7 +7430,6 @@ export namespace Prisma {
   export type PaymentsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
-    stripePaymentIntentId?: boolean
     stripeInvoiceId?: boolean
     amount?: boolean
     currency?: boolean
@@ -7453,7 +7444,6 @@ export namespace Prisma {
   export type PaymentsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
-    stripePaymentIntentId?: boolean
     stripeInvoiceId?: boolean
     amount?: boolean
     currency?: boolean
@@ -7468,7 +7458,6 @@ export namespace Prisma {
   export type PaymentsSelectScalar = {
     id?: boolean
     userId?: boolean
-    stripePaymentIntentId?: boolean
     stripeInvoiceId?: boolean
     amount?: boolean
     currency?: boolean
@@ -7479,7 +7468,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type PaymentsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "stripePaymentIntentId" | "stripeInvoiceId" | "amount" | "currency" | "status" | "description" | "recipientUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["payments"]>
+  export type PaymentsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "stripeInvoiceId" | "amount" | "currency" | "status" | "description" | "recipientUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["payments"]>
   export type PaymentsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -7498,7 +7487,6 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       userId: string
-      stripePaymentIntentId: string
       stripeInvoiceId: string | null
       amount: number
       currency: string
@@ -7933,7 +7921,6 @@ export namespace Prisma {
   interface PaymentsFieldRefs {
     readonly id: FieldRef<"Payments", 'String'>
     readonly userId: FieldRef<"Payments", 'String'>
-    readonly stripePaymentIntentId: FieldRef<"Payments", 'String'>
     readonly stripeInvoiceId: FieldRef<"Payments", 'String'>
     readonly amount: FieldRef<"Payments", 'Int'>
     readonly currency: FieldRef<"Payments", 'String'>
@@ -8450,7 +8437,6 @@ export namespace Prisma {
   export const PaymentsScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
-    stripePaymentIntentId: 'stripePaymentIntentId',
     stripeInvoiceId: 'stripeInvoiceId',
     amount: 'amount',
     currency: 'currency',
@@ -8992,7 +8978,6 @@ export namespace Prisma {
     NOT?: PaymentsWhereInput | PaymentsWhereInput[]
     id?: StringFilter<"Payments"> | string
     userId?: StringFilter<"Payments"> | string
-    stripePaymentIntentId?: StringFilter<"Payments"> | string
     stripeInvoiceId?: StringNullableFilter<"Payments"> | string | null
     amount?: IntFilter<"Payments"> | number
     currency?: StringFilter<"Payments"> | string
@@ -9007,7 +8992,6 @@ export namespace Prisma {
   export type PaymentsOrderByWithRelationInput = {
     id?: SortOrder
     userId?: SortOrder
-    stripePaymentIntentId?: SortOrder
     stripeInvoiceId?: SortOrderInput | SortOrder
     amount?: SortOrder
     currency?: SortOrder
@@ -9021,7 +9005,6 @@ export namespace Prisma {
 
   export type PaymentsWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    stripePaymentIntentId?: string
     AND?: PaymentsWhereInput | PaymentsWhereInput[]
     OR?: PaymentsWhereInput[]
     NOT?: PaymentsWhereInput | PaymentsWhereInput[]
@@ -9035,12 +9018,11 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Payments"> | Date | string
     updatedAt?: DateTimeFilter<"Payments"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id" | "stripePaymentIntentId">
+  }, "id">
 
   export type PaymentsOrderByWithAggregationInput = {
     id?: SortOrder
     userId?: SortOrder
-    stripePaymentIntentId?: SortOrder
     stripeInvoiceId?: SortOrderInput | SortOrder
     amount?: SortOrder
     currency?: SortOrder
@@ -9062,7 +9044,6 @@ export namespace Prisma {
     NOT?: PaymentsScalarWhereWithAggregatesInput | PaymentsScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Payments"> | string
     userId?: StringWithAggregatesFilter<"Payments"> | string
-    stripePaymentIntentId?: StringWithAggregatesFilter<"Payments"> | string
     stripeInvoiceId?: StringNullableWithAggregatesFilter<"Payments"> | string | null
     amount?: IntWithAggregatesFilter<"Payments"> | number
     currency?: StringWithAggregatesFilter<"Payments"> | string
@@ -9525,7 +9506,6 @@ export namespace Prisma {
 
   export type PaymentsCreateInput = {
     id?: string
-    stripePaymentIntentId: string
     stripeInvoiceId?: string | null
     amount: number
     currency?: string
@@ -9540,7 +9520,6 @@ export namespace Prisma {
   export type PaymentsUncheckedCreateInput = {
     id?: string
     userId: string
-    stripePaymentIntentId: string
     stripeInvoiceId?: string | null
     amount: number
     currency?: string
@@ -9553,7 +9532,6 @@ export namespace Prisma {
 
   export type PaymentsUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    stripePaymentIntentId?: StringFieldUpdateOperationsInput | string
     stripeInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: IntFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
@@ -9568,7 +9546,6 @@ export namespace Prisma {
   export type PaymentsUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    stripePaymentIntentId?: StringFieldUpdateOperationsInput | string
     stripeInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: IntFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
@@ -9582,7 +9559,6 @@ export namespace Prisma {
   export type PaymentsCreateManyInput = {
     id?: string
     userId: string
-    stripePaymentIntentId: string
     stripeInvoiceId?: string | null
     amount: number
     currency?: string
@@ -9595,7 +9571,6 @@ export namespace Prisma {
 
   export type PaymentsUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    stripePaymentIntentId?: StringFieldUpdateOperationsInput | string
     stripeInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: IntFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
@@ -9609,7 +9584,6 @@ export namespace Prisma {
   export type PaymentsUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    stripePaymentIntentId?: StringFieldUpdateOperationsInput | string
     stripeInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: IntFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
@@ -10089,7 +10063,6 @@ export namespace Prisma {
   export type PaymentsCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
-    stripePaymentIntentId?: SortOrder
     stripeInvoiceId?: SortOrder
     amount?: SortOrder
     currency?: SortOrder
@@ -10107,7 +10080,6 @@ export namespace Prisma {
   export type PaymentsMaxOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
-    stripePaymentIntentId?: SortOrder
     stripeInvoiceId?: SortOrder
     amount?: SortOrder
     currency?: SortOrder
@@ -10121,7 +10093,6 @@ export namespace Prisma {
   export type PaymentsMinOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
-    stripePaymentIntentId?: SortOrder
     stripeInvoiceId?: SortOrder
     amount?: SortOrder
     currency?: SortOrder
@@ -10760,7 +10731,6 @@ export namespace Prisma {
 
   export type PaymentsCreateWithoutUserInput = {
     id?: string
-    stripePaymentIntentId: string
     stripeInvoiceId?: string | null
     amount: number
     currency?: string
@@ -10773,7 +10743,6 @@ export namespace Prisma {
 
   export type PaymentsUncheckedCreateWithoutUserInput = {
     id?: string
-    stripePaymentIntentId: string
     stripeInvoiceId?: string | null
     amount: number
     currency?: string
@@ -10881,7 +10850,6 @@ export namespace Prisma {
     NOT?: PaymentsScalarWhereInput | PaymentsScalarWhereInput[]
     id?: StringFilter<"Payments"> | string
     userId?: StringFilter<"Payments"> | string
-    stripePaymentIntentId?: StringFilter<"Payments"> | string
     stripeInvoiceId?: StringNullableFilter<"Payments"> | string | null
     amount?: IntFilter<"Payments"> | number
     currency?: StringFilter<"Payments"> | string
@@ -11422,7 +11390,6 @@ export namespace Prisma {
 
   export type PaymentsCreateManyUserInput = {
     id?: string
-    stripePaymentIntentId: string
     stripeInvoiceId?: string | null
     amount: number
     currency?: string
@@ -11459,7 +11426,6 @@ export namespace Prisma {
 
   export type PaymentsUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    stripePaymentIntentId?: StringFieldUpdateOperationsInput | string
     stripeInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: IntFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
@@ -11472,7 +11438,6 @@ export namespace Prisma {
 
   export type PaymentsUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    stripePaymentIntentId?: StringFieldUpdateOperationsInput | string
     stripeInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: IntFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
@@ -11485,7 +11450,6 @@ export namespace Prisma {
 
   export type PaymentsUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    stripePaymentIntentId?: StringFieldUpdateOperationsInput | string
     stripeInvoiceId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: IntFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string

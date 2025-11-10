@@ -186,7 +186,6 @@ exports.Prisma.SubscriptionScalarFieldEnum = {
 exports.Prisma.PaymentsScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  stripePaymentIntentId: 'stripePaymentIntentId',
   stripeInvoiceId: 'stripeInvoiceId',
   amount: 'amount',
   currency: 'currency',

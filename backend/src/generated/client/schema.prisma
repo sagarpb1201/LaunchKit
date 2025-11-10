@@ -99,18 +99,17 @@ model Subscription {
 }
 
 model Payments {
-  id                    String   @id @default(uuid())
-  userId                String
-  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stripePaymentIntentId String   @unique
-  stripeInvoiceId       String?
-  amount                Int
-  currency              String   @default("inr")
-  status                String
-  description           String?
-  recipientUrl          String?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeInvoiceId String?
+  amount          Int
+  currency        String   @default("inr")
+  status          String
+  description     String?
+  recipientUrl    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@index([userId])
 }

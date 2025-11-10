@@ -102,7 +102,6 @@ model Payments {
   id                    String   @id @default(uuid())
   userId                String
   user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stripePaymentIntentId String   @unique
   stripeInvoiceId       String?
   amount                Int
   currency              String   @default("inr")

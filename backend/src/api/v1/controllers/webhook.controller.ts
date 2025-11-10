@@ -43,7 +43,7 @@ export const handleStripeWebhook = asyncHandler(
         break;
 
       case 'invoice.payment_failed': {
-        const invoice = event.data.object as Stripe.Invoice;
+        const invoice = event.data.object as Stripe.Invoice
         // Handle failed payment, e.g., notify the user, update subscription status
         console.log(`Invoice payment failed for invoice: ${invoice.id}`);
         break;

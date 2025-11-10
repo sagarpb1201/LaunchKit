@@ -139,8 +139,8 @@ const handleSubscriptionDeleted = async (subscription: Stripe.Subscription) => {
  * @param invoice - The Stripe Invoice object from the webhook event.
  */
 const handleInvoicePaymentSucceeded = async (invoice: Stripe.Invoice) => {
-  if (!invoice.customer || !invoice.payment_intent) {
-    console.warn(`Invoice ${invoice.id} is missing customer or payment_intent.`);
+  if (!invoice.customer) {
+    console.warn(`Invoice ${invoice.id} is missing customer.`);
     return;
   }
 
@@ -157,7 +157,6 @@ const handleInvoicePaymentSucceeded = async (invoice: Stripe.Invoice) => {
   await prisma.payments.create({
     data: {
       userId: user.id,
-      stripePaymentIntentId: invoice.payment_intent as string,
       stripeInvoiceId: invoice.id,
       amount: invoice.amount_paid,
       currency: invoice.currency,
