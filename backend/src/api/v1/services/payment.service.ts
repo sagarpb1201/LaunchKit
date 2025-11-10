@@ -22,6 +22,7 @@ const getOrCreateStripeCustomer = async (userId: string) => {
 
   const customer = await stripe.customers.create({
     email: user.email,
+    name: user.name || undefined, // Add user's name
     metadata: {
       userId,
     },
@@ -43,9 +44,18 @@ export const createCheckoutSession = async (
   priceId: string
 ) => {
   const stripeCustomerId = await getOrCreateStripeCustomer(userId);
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  if (!user) {
+    // This should theoretically never happen if getOrCreateStripeCustomer succeeded
+    throw new ApiError(404, "User not found");
+  }
 
   const session = await stripe.checkout.sessions.create({
     customer: stripeCustomerId,
+    customer_update: {
+      name: 'auto',
+    },
     payment_method_types: ["card"],
     billing_address_collection: "required",
     mode: "subscription",

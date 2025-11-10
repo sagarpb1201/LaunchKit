@@ -39,9 +39,7 @@ export const handleStripeWebhook = asyncHandler(
 
       case 'invoice.payment_succeeded':
         const invoice = event.data.object as Stripe.Invoice;
-        // The subscription is already updated via customer.subscription.updated,
-        // but you might have other logic here, like sending a receipt email.
-        console.log(`Invoice payment succeeded for ${invoice.id}`);
+        await webhookService.handleInvoicePaymentSucceeded(invoice);
         break;
 
       case 'invoice.payment_failed': {
