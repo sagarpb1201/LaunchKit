@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
 import prisma from '../../../config/prisma';
 import { ApiError } from '../../../utils/ApiError';
-// import { SubscriptionStatus } from '@prisma/client';
+import { SubscriptionStatus } from '../../../generated/client'; // Corrected import path
 import stripe from '../../../config/stripe';
 
 /**
@@ -18,7 +18,6 @@ const handleCheckoutSessionCompleted = async (session: Stripe.Checkout.Session) 
   }
 
   const subscription: Stripe.Subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
-  console.log("subscription",subscription)
 
   const plan = await prisma.plan.findUnique({
     where: { stripePriceId: subscription.items.data[0].price.id },
@@ -28,27 +27,27 @@ const handleCheckoutSessionCompleted = async (session: Stripe.Checkout.Session) 
     throw new ApiError(404, `Plan not found for price ID: ${subscription.items.data[0].price.id}`);
   }
 
+  // Use upsert to handle both creation and updates idempotently
   await prisma.subscription.upsert({
-  where: { stripeSubscriptionId },
-  update: {
-    userId,
-    planId: plan.id,
-    status: subscription.status.toUpperCase() as SubscriptionStatus,
-    currentPeriodStart: new Date(subscription.currentPeriodStart * 1000),
-    currentPeriodEnd: new Date(subscription.currentPeriodEnd * 1000),
-    cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
-  },
-  create: {
-    userId,
-    planId: plan.id,
-    stripeSubscriptionId: subscription.id,
-    status: subscription.status.toUpperCase() as SubscriptionStatus,
-    currentPeriodStart: new Date(subscription.currentPeriodStart * 1000),
-    currentPeriodEnd: new Date(subscription.currentPeriodEnd * 1000),
-    cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
-  },
-});
-
+    where: { stripeSubscriptionId },
+    update: {
+      userId,
+      planId: plan.id,
+      status: subscription.status.toUpperCase() as SubscriptionStatus, // Ensure status is uppercase
+      currentPeriodStart: new Date(subscription.items.data[0].current_period_start * 1000),
+      currentPeriodEnd: new Date(subscription.items.data[0].current_period_end * 1000),
+      cancelAtPeriodEnd: subscription.cancel_at_period_end,
+    },
+    create: { // This 'create' block was missing
+      userId,
+      planId: plan.id,
+      stripeSubscriptionId: subscription.id,
+      status: subscription.status.toUpperCase() as SubscriptionStatus, // Ensure status is uppercase
+      currentPeriodStart: new Date(subscription.items.data[0].current_period_start * 1000),
+      currentPeriodEnd: new Date(subscription.items.data[0].current_period_end * 1000),
+      cancelAtPeriodEnd: subscription.cancel_at_period_end,
+    },
+  });
   console.log(`✅ Subscription created for user ${userId}`);
 };
 
@@ -58,20 +57,20 @@ const handleCheckoutSessionCompleted = async (session: Stripe.Checkout.Session) 
  * @param invoice - The Stripe Invoice or Subscription object from the webhook event.
  */
 const handleSubscriptionUpdate = async (subscription: Stripe.Subscription) => {
-  // await prisma.subscription.update({
-  //   where: {
-  //     stripeSubscriptionId: subscription.id,
-  //   },
-  //   data: {
-  //     status: subscription.status.toUpperCase() as SubscriptionStatus,
-  //     currentPeriodStart: new Date(subscription.current_period_start * 1000),
-  //     currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-  //     cancelAtPeriodEnd: subscription.cancel_at_period_end,
-  //     canceledAt: subscription.canceled_at
-  //       ? new Date(subscription.canceled_at * 1000)
-  //       : null,
-  //   },
-  // });
+  await prisma.subscription.update({
+    where: {
+      stripeSubscriptionId: subscription.id,
+    },
+    data: {
+      status: subscription.status.toUpperCase() as SubscriptionStatus,
+      currentPeriodStart: new Date(subscription.items.data[0].current_period_start * 1000),
+      currentPeriodEnd: new Date(subscription.items.data[0].current_period_end * 1000),
+      cancelAtPeriodEnd: subscription.cancel_at_period_end,
+      canceledAt: subscription.canceled_at
+        ? new Date(subscription.canceled_at * 1000)
+        : null,
+    },
+  });
 
   console.log(`✅ Subscription updated for ${subscription.id}`);
 };

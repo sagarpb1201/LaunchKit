@@ -32,8 +32,7 @@ export const handleStripeWebhook = asyncHandler(
         break;
 
       case 'customer.subscription.deleted':
-        const subscription = event.data.object as Stripe.Subscription;
-        await webhookService.handleSubscriptionUpdate(subscription);
+        // When a subscription is deleted, we only need to call handleSubscriptionDeleted.
         const deletedSubscription = event.data.object as Stripe.Subscription;
         await webhookService.handleSubscriptionDeleted(deletedSubscription);
         break;

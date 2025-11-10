@@ -3,7 +3,7 @@
 A production-ready, open-source SaaS starter kit.
 
 **Note for Founders & Freelancers:** LaunchinKit is more than just code; it's a strategic asset.
-- **For Founders:** Use this to see the quality of work I deliver. Want to launch your SaaS in a week, not three months? [Hire me](https://twitter.com/your_handle_here) to implement and customize this for your specific business.
+- **For Founders:** Use this to see the quality of work I deliver. Want to launch your SaaS in a week, not three months? [Hire me](https://twitter.com/sagarpb1201) to implement and customize this for your specific business.
 - **For Freelancers:** Fork this repository. Use it to build projects for your own clients and accelerate your workflow.
 
 ## What it solves
