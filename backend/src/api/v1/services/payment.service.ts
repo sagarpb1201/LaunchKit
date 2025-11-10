@@ -94,7 +94,7 @@ export const createProductAndPlan = async (
     recurring: { interval },
   });
 
-  const product = await prisma.products.create({
+  const product = await prisma.product.create({
     data: {
       name: productName,
       description: productDescription,
