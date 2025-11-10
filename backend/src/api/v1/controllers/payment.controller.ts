@@ -2,7 +2,10 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../../../utils/asyncHandler";
 import { ApiResponse } from "../../../utils/ApiResponse";
 import * as paymentService from "../services/payment.service";
-import { createCheckoutSessionSchema } from "../validators/payment.validator";
+import {
+  createCheckoutSessionSchema,
+  createProductAndPlanSchema,
+} from "../validators/payment.validator";
 
 export const createCheckoutSessionController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -26,26 +29,34 @@ export const createCheckoutSessionController = asyncHandler(
 );
 
 export const createProductAndPlanController = asyncHandler(
-  async(req:Request, res:Response)=>{
-    const {productName,productDescription,currency,interval,price,features,planName}=req.body;
-    const product=await paymentService.createProductAndPlan(
+  async (req: Request, res: Response) => {
+    const {
       productName,
       productDescription,
       currency,
       interval,
       price,
       features,
+      planName,
+    } = createProductAndPlanSchema.parse(req).body;
+
+    const product = await paymentService.createProductAndPlan(
+      productName,
+      productDescription || "",
+      currency,
+      interval,
+      price,
+      features,
       planName
-    )
-    return res.status(200).json(
-      new ApiResponse(
-        200,
-        product,
-        "Product and plan created successfully"
-      )
     );
+
+    return res
+      .status(201)
+      .json(
+        new ApiResponse(201, product, "Product and plan created successfully")
+      );
   }
-)
+);
 
 export const getSubscriptionPlans=asyncHandler(
   async(req:Request, res:Response)=>{
